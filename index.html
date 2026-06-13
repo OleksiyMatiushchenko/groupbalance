@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="theme-color" content="#0f0f1a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="GroupBalance">
+<meta name="description" content="Розподіл витрат у компанії — хто кому скільки винен">
+<title>GroupBalance</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon.svg">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700;900&family=Golos+Text:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f0f1a;
+    --card: #1a1a2e;
+    --card2: #16213e;
+    --accent: #f7971e;
+    --accent2: #ffd200;
+    --green: #00e676;
+    --red: #ff5252;
+    --blue: #40c4ff;
+    --text: #f0f0f0;
+    --muted: #8888aa;
+    --border: rgba(247,151,30,0.2);
+    --radius: 16px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Golos Text', sans-serif;
+    min-height: 100dvh;
+    padding-bottom: 60px;
+    background-image: radial-gradient(ellipse at 20% 20%, rgba(247,151,30,0.08) 0%, transparent 50%),
+                      radial-gradient(ellipse at 80% 80%, rgba(255,210,0,0.05) 0%, transparent 50%);
+  }
+
+  /* HEADER */
+  header { padding: 28px 20px 16px; text-align: center; }
+  .logo {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 64px; height: 64px; border-radius: 18px; margin-bottom: 12px;
+    background: linear-gradient(135deg, #f7971e, #ffd200);
+    box-shadow: 0 8px 32px rgba(247,151,30,0.4);
+    font-size: 32px;
+    animation: pulse 3s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100%{box-shadow:0 8px 32px rgba(247,151,30,0.4)} 50%{box-shadow:0 12px 40px rgba(247,151,30,0.6)} }
+  header h1 {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 24px; font-weight: 900;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    letter-spacing: -1px;
+  }
+  header p { color: var(--muted); font-size: 13px; margin-top: 4px; }
+
+  .container { padding: 0 16px; max-width: 480px; margin: 0 auto; }
+
+  /* TABS */
+  .tabs { display:flex; background:var(--card); border-radius:12px; padding:4px; margin-bottom:20px; border:1px solid var(--border); }
+  .tab { flex:1; padding:10px; border:none; background:none; color:var(--muted); font-family:'Golos Text',sans-serif; font-size:13px; font-weight:600; border-radius:9px; cursor:pointer; transition:all .2s; }
+  .tab.active { background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#0f0f1a; }
+
+  .section { display:none; }
+  .section.active { display:block; }
+
+  .card { background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:16px; margin-bottom:12px; }
+  .card-title { font-family:'Unbounded',sans-serif; font-size:11px; font-weight:700; color:var(--accent); text-transform:uppercase; letter-spacing:1px; margin-bottom:14px; }
+
+  label { display:block; font-size:12px; color:var(--muted); margin-bottom:5px; font-weight:500; }
+  input[type="text"], input[type="number"] {
+    width:100%; background:var(--card2); border:1px solid rgba(255,255,255,0.1);
+    border-radius:10px; padding:11px 14px; color:var(--text);
+    font-family:'Golos Text',sans-serif; font-size:15px; outline:none;
+    transition:border-color .2s; -webkit-appearance:none;
+  }
+  input:focus { border-color:var(--accent); }
+  input::placeholder { color:var(--muted); }
+  select {
+    width:100%; background:var(--card2); border:1px solid rgba(255,255,255,0.1);
+    border-radius:10px; padding:11px 14px; color:var(--text);
+    font-family:'Golos Text',sans-serif; font-size:15px; outline:none;
+    -webkit-appearance:none; appearance:none;
+  }
+
+  .row2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+
+  .btn { display:block; width:100%; padding:14px; border:none; border-radius:12px; font-family:'Unbounded',sans-serif; font-size:13px; font-weight:700; cursor:pointer; transition:all .18s; letter-spacing:.3px; }
+  .btn-primary { background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#0f0f1a; box-shadow:0 4px 20px rgba(247,151,30,.35); }
+  .btn-primary:active { transform:scale(.97); }
+  .btn-ghost { background:transparent; color:var(--accent); border:1px solid var(--border); font-size:13px; padding:10px; }
+
+  /* TOGGLE */
+  .toggle-row { display:flex; justify-content:space-between; align-items:center; }
+  .toggle-label { font-size:13px; color:var(--text); font-weight:500; flex:1; }
+  .toggle-sub { font-size:11px; color:var(--muted); margin-top:2px; }
+  .toggle { position:relative; width:44px; height:24px; flex-shrink:0; }
+  .toggle input { opacity:0; width:0; height:0; }
+  .slider { position:absolute; inset:0; background:#2a2a3e; border-radius:24px; cursor:pointer; transition:.3s; }
+  .slider:before { content:''; position:absolute; width:18px; height:18px; left:3px; top:3px; background:var(--muted); border-radius:50%; transition:.3s; }
+  input:checked + .slider { background:linear-gradient(135deg,var(--accent),var(--accent2)); }
+  input:checked + .slider:before { transform:translateX(20px); background:#0f0f1a; }
+
+  /* MODE BUTTONS */
+  .mode-btns { display:flex; gap:6px; }
+  .mode-btn { flex:1; padding:9px 6px; border:1px solid rgba(255,255,255,0.1); background:var(--card2); color:var(--muted); border-radius:10px; font-family:'Golos Text',sans-serif; font-size:13px; font-weight:600; cursor:pointer; transition:all .2s; text-align:center; }
+  .mode-btn.active { border-color:var(--accent); color:var(--accent); background:rgba(247,151,30,0.1); }
+
+  /* PARTICIPANT */
+  .participant { background:var(--card2); border-radius:12px; padding:12px 14px; margin-bottom:8px; border:1px solid rgba(255,255,255,0.06); animation:fadeIn .25s ease; }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:translateY(0)} }
+  .p-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; gap:8px; }
+  .p-name { font-weight:600; font-size:15px; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .p-actions { display:flex; gap:6px; flex-shrink:0; }
+  .p-meta { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+  .badge { background:rgba(247,151,30,0.15); color:var(--accent); border-radius:6px; padding:3px 8px; font-size:12px; font-weight:600; }
+  .badge-green { background:rgba(0,230,118,0.15); color:var(--green); }
+  .badge-blue { background:rgba(64,196,255,0.15); color:var(--blue); }
+  .btn-icon { background:rgba(255,255,255,0.07); color:var(--muted); border:none; border-radius:8px; width:32px; height:32px; font-size:15px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .2s; }
+  .btn-icon.del { background:rgba(255,82,82,0.12); color:var(--red); }
+
+  /* EDIT FORM */
+  .edit-form { margin-top:10px; padding-top:10px; border-top:1px solid rgba(255,255,255,0.07); display:none; }
+  .edit-form.open { display:block; animation:fadeIn .2s ease; }
+  .edit-actions { display:flex; gap:8px; margin-top:10px; }
+  .btn-save { flex:1; padding:9px; border:none; border-radius:10px; background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#0f0f1a; font-family:'Golos Text',sans-serif; font-weight:700; font-size:13px; cursor:pointer; }
+  .btn-cancel { padding:9px 14px; border:1px solid rgba(255,255,255,0.1); border-radius:10px; background:none; color:var(--muted); font-family:'Golos Text',sans-serif; font-size:13px; cursor:pointer; }
+
+  /* RESULTS */
+  .result-summary { background:linear-gradient(135deg,rgba(247,151,30,.12),rgba(255,210,0,.06)); border:1px solid var(--border); border-radius:var(--radius); padding:16px; margin-bottom:16px; text-align:center; }
+  .result-summary .event-tag { font-size:12px; color:var(--accent); font-weight:600; margin-bottom:6px; font-family:'Unbounded',sans-serif; letter-spacing:.5px; }
+  .result-summary .big-num { font-family:'Unbounded',sans-serif; font-size:32px; font-weight:900; background:linear-gradient(90deg,var(--accent),var(--accent2)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+  .result-summary .lbl { color:var(--muted); font-size:13px; margin-top:2px; }
+  .round-note { font-size:11px; color:var(--accent2); margin-top:4px; }
+
+  .stats-row { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-bottom:16px; }
+  .stat-box { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:12px 10px; text-align:center; }
+  .stat-box .val { font-family:'Unbounded',sans-serif; font-size:16px; font-weight:700; color:var(--accent2); }
+  .stat-box .lbl { font-size:10px; color:var(--muted); margin-top:3px; }
+
+  .transfer-card { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:14px 16px; margin-bottom:10px; display:flex; align-items:center; gap:12px; animation:fadeIn .3s ease; }
+  .transfer-arrow { font-size:20px; color:var(--accent); flex-shrink:0; }
+  .transfer-info { flex:1; }
+  .transfer-from { font-size:13px; color:var(--muted); }
+  .transfer-to { font-size:15px; font-weight:600; }
+  .transfer-amount { font-family:'Unbounded',sans-serif; font-size:16px; font-weight:700; color:var(--green); flex-shrink:0; }
+
+  .no-transfers { text-align:center; padding:30px; color:var(--green); font-size:16px; font-weight:600; }
+  .section-label { font-size:12px; color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:.8px; margin:16px 0 8px; }
+
+  .balance-row { display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.05); }
+  .balance-row:last-child { border-bottom:none; }
+  .balance-name { font-size:14px; font-weight:500; }
+  .balance-paid { font-size:12px; color:var(--muted); }
+  .balance-val { font-family:'Unbounded',sans-serif; font-size:14px; font-weight:700; }
+  .pos { color:var(--green); }
+  .neg { color:var(--red); }
+
+  .empty-state { text-align:center; padding:30px 20px; color:var(--muted); font-size:14px; }
+
+  /* PWA INSTALL BANNER */
+  #install-banner {
+    display:none; margin-bottom:12px;
+    background:linear-gradient(135deg,rgba(247,151,30,0.15),rgba(255,210,0,0.08));
+    border:1px solid var(--border); border-radius:var(--radius); padding:14px 16px;
+    align-items:center; gap:12px;
+  }
+  #install-banner.show { display:flex; animation:fadeIn .3s ease; }
+  #install-banner .ib-text { flex:1; }
+  #install-banner .ib-title { font-weight:700; font-size:14px; }
+  #install-banner .ib-sub { font-size:12px; color:var(--muted); margin-top:2px; }
+  #install-banner .ib-btn { background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#0f0f1a; border:none; border-radius:10px; padding:9px 16px; font-family:'Unbounded',sans-serif; font-weight:700; font-size:12px; cursor:pointer; white-space:nowrap; }
+  #install-banner .ib-close { background:none; border:none; color:var(--muted); font-size:18px; cursor:pointer; padding:0 4px; }
+
+  /* iOS INSTALL HINT */
+  #ios-hint {
+    display:none; margin-bottom:12px;
+    background:rgba(64,196,255,0.08); border:1px solid rgba(64,196,255,0.2);
+    border-radius:var(--radius); padding:14px 16px; font-size:13px; line-height:1.6;
+    color:var(--text); position:relative;
+  }
+  #ios-hint.show { display:block; animation:fadeIn .3s ease; }
+  #ios-hint .ih-title { font-weight:700; margin-bottom:6px; color:var(--blue); }
+  #ios-hint .ih-close { position:absolute; top:10px; right:12px; background:none; border:none; color:var(--muted); font-size:18px; cursor:pointer; }
+
+  /* TOAST */
+  #toast {
+    position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%) translateY(20px);
+    background: #1a1a2e; border: 1px solid rgba(247,151,30,0.4);
+    color: var(--text); padding: 12px 20px; border-radius: 12px;
+    font-size: 14px; font-weight: 600; z-index: 999;
+    opacity: 0; transition: all 0.3s; pointer-events: none;
+    white-space: nowrap; box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  }
+  #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  #toast.error { border-color: rgba(255,82,82,0.5); color: var(--red); }
+  #toast.success { border-color: rgba(0,230,118,0.5); color: var(--green); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">⚖️</div>
+  <h1>GroupBalance</h1>
+  <p>Розподіл витрат у компанії</p>
+</header>
+
+<div class="container">
+
+  <!-- PWA INSTALL BANNER (Android/Desktop) -->
+  <div id="install-banner">
+    <div class="ib-text">
+      <div class="ib-title">📲 Встановити як застосунок</div>
+      <div class="ib-sub">Працює офлайн, іконка на екрані</div>
+    </div>
+    <button class="ib-btn" onclick="installPWA()">Встановити</button>
+    <button class="ib-close" onclick="hideBanner()">×</button>
+  </div>
+
+  <!-- iOS INSTALL HINT -->
+  <div id="ios-hint">
+    <button class="ih-close" onclick="document.getElementById('ios-hint').classList.remove('show')">×</button>
+    <div class="ih-title">📲 Як встановити на iPhone/iPad</div>
+    Натисни кнопку <strong>«Поділитись»</strong> (□↑) внизу Safari →<br>
+    потім <strong>«На екран Домівки»</strong> → <strong>«Додати»</strong>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('input')">👥 Учасники</button>
+    <button class="tab" onclick="showTab('result')">💸 Розрахунок</button>
+  </div>
+
+  <!-- INPUT TAB -->
+  <div class="section active" id="tab-input">
+
+    <div class="card">
+      <div class="card-title">🎉 Захід</div>
+      <div class="row2" style="margin-bottom:10px">
+        <div>
+          <label>Тип заходу</label>
+          <select id="inp-event-type" onchange="updateHeader()">
+            <option value="🔥 Пікнік">🔥 Пікнік</option>
+            <option value="🛁 Баня">🛁 Баня</option>
+            <option value="🎂 День народження">🎂 День народження</option>
+            <option value="🏖️ Відпочинок">🏖️ Відпочинок</option>
+            <option value="🍕 Корпоратив">🍕 Корпоратив</option>
+            <option value="⚽ Спорт">⚽ Спорт</option>
+            <option value="🎭 Інше">🎭 Інше</option>
+          </select>
+        </div>
+        <div>
+          <label>Власна назва</label>
+          <input type="text" id="inp-event-name" placeholder="Дача Петренків" maxlength="40" oninput="updateHeader()">
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">⚙️ Налаштування</div>
+      <div style="margin-bottom:14px">
+        <label style="margin-bottom:8px">Розрахунок ведеться</label>
+        <div class="mode-btns">
+          <button class="mode-btn active" id="mode-person" onclick="setMode('person')">👤 На особу</button>
+          <button class="mode-btn" id="mode-family" onclick="setMode('family')">👨‍👩‍👧 На сім'ю</button>
+        </div>
+        <div style="font-size:11px;color:var(--muted);margin-top:6px" id="mode-hint">Кількість осіб впливає на частку витрат</div>
+      </div>
+      <div class="toggle-row">
+        <div>
+          <div class="toggle-label">Округлення до цілих ₴</div>
+          <div class="toggle-sub">Якщо сума не ділиться рівно</div>
+        </div>
+        <label class="toggle">
+          <input type="checkbox" id="chk-round" onchange="updateRoundHint()">
+          <span class="slider"></span>
+        </label>
+      </div>
+      <div id="round-hint" style="font-size:11px;color:var(--muted);margin-top:6px;display:none">
+        Різниця від округлення розподіляється між учасниками
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">➕ Додати учасника</div>
+      <div style="margin-bottom:10px">
+        <label>Прізвище або ім'я</label>
+        <input type="text" id="inp-name" placeholder="Петренко" maxlength="30">
+      </div>
+      <div class="row2" style="margin-bottom:10px">
+        <div id="count-wrap">
+          <label>Осіб у групі</label>
+          <input type="number" id="inp-count" placeholder="2" min="1" max="50">
+        </div>
+        <div>
+          <label>Витратив (₴)</label>
+          <input type="number" id="inp-spent" placeholder="0" min="0">
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="addParticipant()">Додати учасника</button>
+    </div>
+
+    <div id="participants-list"></div>
+
+    <div id="calc-btn-wrap" style="display:none;margin-top:8px">
+      <button class="btn btn-primary" onclick="calculate()">🧮 Розрахувати</button>
+    </div>
+  </div>
+
+  <!-- RESULT TAB -->
+  <div class="section" id="tab-result">
+    <div id="result-content">
+      <div class="empty-state">
+        <div style="font-size:40px;margin-bottom:12px">🧮</div>
+        Спочатку додайте учасників<br>та натисніть «Розрахувати»
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+
+function toast(msg, type='error') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'show ' + type;
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.className = '', 2500);
+}
+
+// ---- PWA SETUP ----
+let deferredPrompt = null;
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(()=>{});
+}
+
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  document.getElementById('install-banner').classList.add('show');
+});
+window.addEventListener('appinstalled', () => { hideBanner(); deferredPrompt = null; });
+
+function installPWA() {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  deferredPrompt.userChoice.then(() => { deferredPrompt = null; hideBanner(); });
+}
+function hideBanner() { document.getElementById('install-banner').classList.remove('show'); }
+
+const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+if (isIOS && !window.navigator.standalone) {
+  document.getElementById('ios-hint').classList.add('show');
+}
+
+// ---- APP LOGIC ----
+let participants = [];
+let calcMode = 'person';
+
+const eventEmojis = {
+  '🔥 Пікнік':'🔥','🛁 Баня':'🛁','🎂 День народження':'🎂',
+  '🏖️ Відпочинок':'🏖️','🍕 Корпоратив':'🍕','⚽ Спорт':'⚽','🎭 Інше':'🎭'
+};
+
+function getEventLabel() {
+  const name = document.getElementById('inp-event-name').value.trim();
+  return name || document.getElementById('inp-event-type').value;
+}
+function getEventEmoji() {
+  const name = document.getElementById('inp-event-name').value.trim();
+  if (name) return '🎉';
+  return eventEmojis[document.getElementById('inp-event-type').value] || '🎉';
+}
+function updateHeader() {}
+function updateRoundHint() {
+  document.getElementById('round-hint').style.display =
+    document.getElementById('chk-round').checked ? 'block' : 'none';
+}
+function setMode(m) {
+  calcMode = m;
+  document.getElementById('mode-person').classList.toggle('active', m==='person');
+  document.getElementById('mode-family').classList.toggle('active', m==='family');
+  const hint = document.getElementById('mode-hint');
+  if (m==='family') {
+    document.getElementById('count-wrap').style.display='none';
+    hint.textContent="Кожна сім'я платить рівну частку незалежно від кількості";
+  } else {
+    document.getElementById('count-wrap').style.display='block';
+    hint.textContent='Кількість осіб впливає на частку витрат';
+  }
+  renderList();
+}
+function showTab(t) {
+  document.querySelectorAll('.tab').forEach((b,i)=>b.classList.toggle('active',(t==='input'&&i===0)||(t==='result'&&i===1)));
+  document.getElementById('tab-input').classList.toggle('active',t==='input');
+  document.getElementById('tab-result').classList.toggle('active',t==='result');
+}
+
+function addParticipant() {
+  const name = document.getElementById('inp-name').value.trim();
+  const count = parseInt(document.getElementById('inp-count').value)||1;
+  const spent = parseFloat(document.getElementById('inp-spent').value)||0;
+  if (!name) { toast("⚠️ Введіть ім'я"); return; }
+  participants.push({ id: Date.now(), name, count, spent });
+  document.getElementById('inp-name').value='';
+  document.getElementById('inp-count').value='';
+  document.getElementById('inp-spent').value='';
+  renderList();
+  document.getElementById('inp-name').focus();
+}
+function removeParticipant(id) {
+  participants = participants.filter(p=>p.id!==id);
+  renderList();
+}
+function toggleEdit(id) {
+  document.getElementById('ef-'+id).classList.toggle('open');
+}
+function saveEdit(id) {
+  const p = participants.find(p=>p.id===id);
+  if (!p) return;
+  const name = document.getElementById('en-'+id).value.trim();
+  const count = parseInt(document.getElementById('ec-'+id).value)||1;
+  const spent = parseFloat(document.getElementById('es-'+id).value)||0;
+  if (!name) { toast("⚠️ Введіть ім'я"); return; }
+  p.name=name; p.count=count; p.spent=spent;
+  renderList();
+}
+function renderList() {
+  const el = document.getElementById('participants-list');
+  const wrap = document.getElementById('calc-btn-wrap');
+  if (!participants.length) { el.innerHTML=''; wrap.style.display='none'; return; }
+  wrap.style.display='block';
+  const byFamily = calcMode==='family';
+  el.innerHTML = `<div class="section-label">Список учасників (${participants.length})</div>` +
+    participants.map(p=>`
+      <div class="participant">
+        <div class="p-header">
+          <span class="p-name">${escHtml(p.name)}</span>
+          <div class="p-actions">
+            <button class="btn-icon" onclick="toggleEdit(${p.id})">✏️</button>
+            <button class="btn-icon del" onclick="removeParticipant(${p.id})">✕</button>
+          </div>
+        </div>
+        <div class="p-meta">
+          ${!byFamily?`<span class="badge">👤 ${p.count} ос.</span>`:`<span class="badge badge-blue">👨‍👩‍👧 сім'я</span>`}
+          ${p.spent>0?`<span class="badge badge-green">💳 ${fmtMoney(p.spent)} ₴</span>`:`<span class="badge" style="color:var(--muted)">не платив</span>`}
+        </div>
+        <div class="edit-form" id="ef-${p.id}">
+          <div style="margin-bottom:8px"><label>Ім'я</label><input type="text" id="en-${p.id}" value="${escAttr(p.name)}" maxlength="30"></div>
+          <div class="row2" style="margin-bottom:0">
+            ${!byFamily?`<div><label>Осіб</label><input type="number" id="ec-${p.id}" value="${p.count}" min="1" max="50"></div>`:`<input type="hidden" id="ec-${p.id}" value="1">`}
+            <div><label>Витратив (₴)</label><input type="number" id="es-${p.id}" value="${p.spent}" min="0"></div>
+          </div>
+          <div class="edit-actions">
+            <button class="btn-save" onclick="saveEdit(${p.id})">✅ Зберегти</button>
+            <button class="btn-cancel" onclick="toggleEdit(${p.id})">Скасувати</button>
+          </div>
+        </div>
+      </div>
+    `).join('');
+}
+
+function calcCore() {
+  const doRound = document.getElementById('chk-round').checked;
+  const byFamily = calcMode==='family';
+  const units = byFamily ? participants.length : participants.reduce((s,p)=>s+p.count,0);
+  const totalSpent = participants.reduce((s,p)=>s+p.spent,0);
+  const exactPerUnit = totalSpent / units;
+
+  // Розраховуємо частку кожного точно (без округлення цілого perUnit)
+  // щоб сума часток завжди = totalSpent
+  let balances;
+  let wasRounded = false;
+  let perUnitDisplay = exactPerUnit;
+
+  if (doRound) {
+    // Округляємо частку кожного учасника окремо, щоб сума не розходилась
+    const rawOwed = participants.map(p => {
+      const u = byFamily ? 1 : p.count;
+      return { name: p.name, paid: p.spent, units: u, rawOwed: exactPerUnit * u };
+    });
+    // Floor для кожного, потім розподіляємо залишок копійки по одному
+    let floored = rawOwed.map(p => ({ ...p, owed: Math.floor(p.rawOwed) }));
+    let remainder = Math.round(totalSpent - floored.reduce((s,p)=>s+p.owed,0));
+    // Сортуємо за дробовою частиною (хто найбільше "недоотримав") і додаємо по 1
+    const sorted = [...floored].map((p,i)=>({i, frac: p.rawOwed - Math.floor(p.rawOwed)})).sort((a,b)=>b.frac-a.frac);
+    for (let k=0; k<remainder && k<sorted.length; k++) floored[sorted[k].i].owed += 1;
+    balances = floored.map(p => ({ name:p.name, paid:p.paid, owed:p.owed, balance: p.paid - p.owed }));
+    wasRounded = true;
+    perUnitDisplay = Math.round(exactPerUnit);
+  } else {
+    balances = participants.map(p => {
+      const u = byFamily ? 1 : p.count;
+      const owed = Math.round(exactPerUnit * u * 100) / 100;
+      return { name:p.name, paid:p.spent, owed, balance: Math.round((p.spent - owed)*100)/100 };
+    });
+  }
+
+  return { balances, wasRounded, perUnitDisplay, exactPerUnit, units, totalSpent, byFamily };
+}
+
+function calculate() {
+  if (participants.length < 2) { toast('⚠️ Додайте мінімум 2 учасники'); return; }
+  const { balances, wasRounded, perUnitDisplay, units, totalSpent, byFamily } = calcCore();
+  const transfers = simplifyDebts(balances.map(b=>({name:b.name,bal:b.balance})));
+  const eventLabel = getEventLabel();
+  const emoji = getEventEmoji();
+  const unitLabel = byFamily?"сім'ю":"особу";
+
+  document.getElementById('result-content').innerHTML = `
+    <div class="result-summary">
+      <div class="event-tag">${emoji} ${escHtml(eventLabel)}</div>
+      <div class="big-num">${fmtMoney(totalSpent)} ₴</div>
+      <div class="lbl">Загальна сума витрат</div>
+      ${wasRounded?`<div class="round-note">≈ ${fmtMoney(perUnitDisplay)} ₴ на ${unitLabel} (округлено)</div>`:`<div class="round-note" style="color:var(--muted)">${fmtMoney(perUnitDisplay % 1 === 0 ? perUnitDisplay : (Math.round(perUnitDisplay*100)/100))} ₴ на ${unitLabel}</div>`}
+    </div>
+    <div class="stats-row">
+      <div class="stat-box"><div class="val">${units}</div><div class="lbl">${byFamily?'сімей':'осіб'}</div></div>
+      <div class="stat-box"><div class="val">${fmtMoney(perUnitDisplay)}</div><div class="lbl">₴ на ${unitLabel}</div></div>
+      <div class="stat-box"><div class="val">${transfers.length}</div><div class="lbl">переказів</div></div>
+    </div>
+    <div class="card">
+      <div class="card-title">📊 Баланс учасників</div>
+      ${balances.map(b=>`
+        <div class="balance-row">
+          <div>
+            <div class="balance-name">${escHtml(b.name)}</div>
+            <div class="balance-paid">Сплатив: ${fmtMoney(b.paid)} ₴ · Частка: ${fmtMoney(b.owed)} ₴</div>
+          </div>
+          <div style="text-align:right;flex-shrink:0">
+            <div class="balance-val ${b.balance>0.009?'pos':b.balance<-0.009?'neg':''}">${b.balance>0.009?'отримає +':'доплатить '}${fmtMoney(Math.abs(b.balance))} ₴</div>
+          </div>
+        </div>`).join('')}
+    </div>
+    <div class="section-label">💸 Хто кому переводить</div>
+    ${transfers.length===0
+      ?'<div class="no-transfers">✅ Всі розрахувались рівно!</div>'
+      :transfers.map(t=>`
+        <div class="transfer-card">
+          <div class="transfer-arrow">→</div>
+          <div class="transfer-info">
+            <div class="transfer-from">${escHtml(t.from)} переводить</div>
+            <div class="transfer-to">${escHtml(t.to)}</div>
+          </div>
+          <div class="transfer-amount">${fmtMoney(t.amount)} ₴</div>
+        </div>`).join('')}
+    <div style="margin-top:20px">
+      <button class="btn btn-ghost" onclick="shareResult()">📤 Поділитись результатом</button>
+    </div>
+  `;
+  showTab('result');
+}
+
+function simplifyDebts(people) {
+  let pos=[], neg=[];
+  people.forEach(p=>{
+    if(p.bal>0.01) pos.push({name:p.name,amt:p.bal});
+    else if(p.bal<-0.01) neg.push({name:p.name,amt:-p.bal});
+  });
+  pos.sort((a,b)=>b.amt-a.amt); neg.sort((a,b)=>b.amt-a.amt);
+  const transfers=[]; let i=0,j=0;
+  while(i<pos.length&&j<neg.length){
+    const amount=Math.min(pos[i].amt,neg[j].amt);
+    transfers.push({from:neg[j].name,to:pos[i].name,amount});
+    pos[i].amt-=amount; neg[j].amt-=amount;
+    if(pos[i].amt<0.01)i++; if(neg[j].amt<0.01)j++;
+  }
+  return transfers;
+}
+
+function shareResult() {
+  const { balances, perUnitDisplay, totalSpent, byFamily } = calcCore();
+  const transfers = simplifyDebts(balances.map(b=>({name:b.name,bal:b.balance})));
+  const unitLabel = byFamily?"сім'ю":"особу";
+  let text = `⚖️ GroupBalance — ${getEventLabel()}\n`;
+  text += `💰 Загалом: ${fmtMoney(totalSpent)} ₴ (${fmtMoney(perUnitDisplay)} ₴/${unitLabel})\n\n`;
+  text += `📊 Хто скільки доплачує / отримує:\n`;
+  balances.forEach(b => {
+    if (b.balance > 0.009) text += `• ${b.name}: отримає +${fmtMoney(b.balance)} ₴\n`;
+    else if (b.balance < -0.009) text += `• ${b.name}: доплатить ${fmtMoney(Math.abs(b.balance))} ₴\n`;
+    else text += `• ${b.name}: ✅ розрахований\n`;
+  });
+  text += `\n💸 Переводимо:\n`;
+  if (!transfers.length) { text += `✅ Всі в розрахунку!`; }
+  else { transfers.forEach(t => { text += `• ${t.from} → ${t.to}: ${fmtMoney(t.amount)} ₴\n`; }); }
+  if (navigator.share) { navigator.share({title:'GroupBalance — '+getEventLabel(), text}); }
+  else { navigator.clipboard.writeText(text).then(()=>toast('✅ Скопійовано!','success')); }
+}
+
+function fmtMoney(n){const r=Math.round(n*100)/100;return r%1===0?Math.round(r).toString():r.toFixed(2);}
+function escHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function escAttr(s){return escHtml(s);}
+
+document.getElementById('inp-spent').addEventListener('keydown',e=>{if(e.key==='Enter')addParticipant();});
+document.getElementById('inp-name').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('inp-count').focus();});
+</script>
+
+<div id="toast"></div>
+</body>
+</html>
