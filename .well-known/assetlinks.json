@@ -1,0 +1,10 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "ua.github.groupbalance",
+    "sha256_cert_fingerprints": [
+      "BA:E8:F0:05:00:3B:2C:AE:01:EE:10:61:8C:8C:91:97:2E:FF:B7:5F:71:52:7C:B3:3A:73:40:52:57:15:02:33"
+    ]
+  }
+}]
