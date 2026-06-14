@@ -10,355 +10,265 @@
 <meta name="description" content="Розподіл витрат у компанії — хто кому скільки винен">
 <title>GroupBalance</title>
 <link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="icon.svg">
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700;900&family=Golos+Text:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #0f0f1a;
-    --card: #1a1a2e;
-    --card2: #16213e;
-    --accent: #f7971e;
-    --accent2: #ffd200;
-    --green: #00e676;
-    --red: #ff5252;
-    --blue: #40c4ff;
-    --text: #f0f0f0;
-    --muted: #8888aa;
-    --border: rgba(247,151,30,0.2);
-    --radius: 16px;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Golos Text', sans-serif;
-    min-height: 100dvh;
-    padding-bottom: 60px;
-    background-image: radial-gradient(ellipse at 20% 20%, rgba(247,151,30,0.08) 0%, transparent 50%),
-                      radial-gradient(ellipse at 80% 80%, rgba(255,210,0,0.05) 0%, transparent 50%);
-  }
+:root {
+  --bg:#0f0f1a; --card:#1a1a2e; --card2:#16213e;
+  --accent:#f7971e; --accent2:#ffd200; --green:#00e676;
+  --red:#ff5252; --blue:#40c4ff; --text:#f0f0f0;
+  --muted:#8888aa; --border:rgba(247,151,30,0.2); --radius:16px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--text);font-family:'Golos Text',sans-serif;min-height:100dvh;padding-bottom:60px;background-image:radial-gradient(ellipse at 20% 20%,rgba(247,151,30,.08) 0%,transparent 50%),radial-gradient(ellipse at 80% 80%,rgba(255,210,0,.05) 0%,transparent 50%)}
 
-  /* HEADER */
-  header { padding: 28px 20px 16px; text-align: center; }
-  .logo {
-    display: inline-flex; align-items: center; justify-content: center;
-    width: 64px; height: 64px; border-radius: 18px; margin-bottom: 12px;
-    background: linear-gradient(135deg, #f7971e, #ffd200);
-    box-shadow: 0 8px 32px rgba(247,151,30,0.4);
-    font-size: 32px;
-    animation: pulse 3s ease-in-out infinite;
-  }
-  @keyframes pulse { 0%,100%{box-shadow:0 8px 32px rgba(247,151,30,0.4)} 50%{box-shadow:0 12px 40px rgba(247,151,30,0.6)} }
-  header h1 {
-    font-family: 'Unbounded', sans-serif;
-    font-size: 24px; font-weight: 900;
-    background: linear-gradient(90deg, var(--accent), var(--accent2));
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    letter-spacing: -1px;
-  }
-  header p { color: var(--muted); font-size: 13px; margin-top: 4px; }
+/* SCREENS */
+.screen{display:none;min-height:100dvh}
+.screen.active{display:block}
 
-  .container { padding: 0 16px; max-width: 480px; margin: 0 auto; }
+/* HEADER */
+.top-bar{display:flex;align-items:center;padding:16px 16px 8px;gap:12px;max-width:480px;margin:0 auto}
+.top-bar-logo{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.top-bar-title{font-family:'Unbounded',sans-serif;font-size:16px;font-weight:900;background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.top-bar-back{background:none;border:none;color:var(--accent);font-size:22px;cursor:pointer;padding:0;flex-shrink:0}
 
-  /* TABS */
-  .tabs { display:flex; background:var(--card); border-radius:12px; padding:4px; margin-bottom:20px; border:1px solid var(--border); }
-  .tab { flex:1; padding:10px; border:none; background:none; color:var(--muted); font-family:'Golos Text',sans-serif; font-size:13px; font-weight:600; border-radius:9px; cursor:pointer; transition:all .2s; }
-  .tab.active { background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#0f0f1a; }
+header{padding:28px 20px 16px;text-align:center}
+.logo{display:inline-flex;align-items:center;justify-content:center;width:64px;height:64px;border-radius:18px;margin-bottom:12px;background:linear-gradient(135deg,#f7971e,#ffd200);box-shadow:0 8px 32px rgba(247,151,30,.4);font-size:32px;animation:pulse 3s ease-in-out infinite}
+@keyframes pulse{0%,100%{box-shadow:0 8px 32px rgba(247,151,30,.4)}50%{box-shadow:0 12px 40px rgba(247,151,30,.6)}}
+header h1{font-family:'Unbounded',sans-serif;font-size:24px;font-weight:900;background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:-1px}
+header p{color:var(--muted);font-size:13px;margin-top:4px}
 
-  .section { display:none; }
-  .section.active { display:block; }
+.container{padding:0 16px;max-width:480px;margin:0 auto}
 
-  .card { background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:16px; margin-bottom:12px; }
-  .card-title { font-family:'Unbounded',sans-serif; font-size:11px; font-weight:700; color:var(--accent); text-transform:uppercase; letter-spacing:1px; margin-bottom:14px; }
+/* EVENTS LIST */
+.event-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px;cursor:pointer;transition:all .2s;animation:fadeIn .25s ease}
+.event-card:active{transform:scale(.98)}
+.event-card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
+.event-card-name{font-family:'Unbounded',sans-serif;font-size:14px;font-weight:700;color:var(--text)}
+.event-card-date{font-size:11px;color:var(--muted)}
+.event-card-meta{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.event-card-del{background:rgba(255,82,82,.12);color:var(--red);border:none;border-radius:8px;padding:6px 10px;font-size:13px;cursor:pointer;flex-shrink:0}
 
-  label { display:block; font-size:12px; color:var(--muted); margin-bottom:5px; font-weight:500; }
-  input[type="text"], input[type="number"] {
-    width:100%; background:var(--card2); border:1px solid rgba(255,255,255,0.1);
-    border-radius:10px; padding:11px 14px; color:var(--text);
-    font-family:'Golos Text',sans-serif; font-size:15px; outline:none;
-    transition:border-color .2s; -webkit-appearance:none;
-  }
-  input:focus { border-color:var(--accent); }
-  input::placeholder { color:var(--muted); }
-  select {
-    width:100%; background:var(--card2); border:1px solid rgba(255,255,255,0.1);
-    border-radius:10px; padding:11px 14px; color:var(--text);
-    font-family:'Golos Text',sans-serif; font-size:15px; outline:none;
-    -webkit-appearance:none; appearance:none;
-  }
+/* TABS */
+.tabs{display:flex;background:var(--card);border-radius:12px;padding:4px;margin-bottom:20px;border:1px solid var(--border)}
+.tab{flex:1;padding:10px;border:none;background:none;color:var(--muted);font-family:'Golos Text',sans-serif;font-size:13px;font-weight:600;border-radius:9px;cursor:pointer;transition:all .2s}
+.tab.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#0f0f1a}
 
-  .row2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.section{display:none}
+.section.active{display:block}
 
-  .btn { display:block; width:100%; padding:14px; border:none; border-radius:12px; font-family:'Unbounded',sans-serif; font-size:13px; font-weight:700; cursor:pointer; transition:all .18s; letter-spacing:.3px; }
-  .btn-primary { background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#0f0f1a; box-shadow:0 4px 20px rgba(247,151,30,.35); }
-  .btn-primary:active { transform:scale(.97); }
-  .btn-ghost { background:transparent; color:var(--accent); border:1px solid var(--border); font-size:13px; padding:10px; }
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px}
+.card-title{font-family:'Unbounded',sans-serif;font-size:11px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:1px;margin-bottom:14px}
 
-  /* TOGGLE */
-  .toggle-row { display:flex; justify-content:space-between; align-items:center; }
-  .toggle-label { font-size:13px; color:var(--text); font-weight:500; flex:1; }
-  .toggle-sub { font-size:11px; color:var(--muted); margin-top:2px; }
-  .toggle { position:relative; width:44px; height:24px; flex-shrink:0; }
-  .toggle input { opacity:0; width:0; height:0; }
-  .slider { position:absolute; inset:0; background:#2a2a3e; border-radius:24px; cursor:pointer; transition:.3s; }
-  .slider:before { content:''; position:absolute; width:18px; height:18px; left:3px; top:3px; background:var(--muted); border-radius:50%; transition:.3s; }
-  input:checked + .slider { background:linear-gradient(135deg,var(--accent),var(--accent2)); }
-  input:checked + .slider:before { transform:translateX(20px); background:#0f0f1a; }
+label{display:block;font-size:12px;color:var(--muted);margin-bottom:5px;font-weight:500}
+input[type="text"],input[type="number"]{width:100%;background:var(--card2);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:11px 14px;color:var(--text);font-family:'Golos Text',sans-serif;font-size:15px;outline:none;transition:border-color .2s;-webkit-appearance:none}
+input:focus{border-color:var(--accent)}
+input::placeholder{color:var(--muted)}
+select{width:100%;background:var(--card2);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:11px 14px;color:var(--text);font-family:'Golos Text',sans-serif;font-size:15px;outline:none;-webkit-appearance:none;appearance:none}
 
-  /* MODE BUTTONS */
-  .mode-btns { display:flex; gap:6px; }
-  .mode-btn { flex:1; padding:9px 6px; border:1px solid rgba(255,255,255,0.1); background:var(--card2); color:var(--muted); border-radius:10px; font-family:'Golos Text',sans-serif; font-size:13px; font-weight:600; cursor:pointer; transition:all .2s; text-align:center; }
-  .mode-btn.active { border-color:var(--accent); color:var(--accent); background:rgba(247,151,30,0.1); }
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 
-  /* PARTICIPANT */
-  .participant { background:var(--card2); border-radius:12px; padding:12px 14px; margin-bottom:8px; border:1px solid rgba(255,255,255,0.06); animation:fadeIn .25s ease; }
-  @keyframes fadeIn { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:translateY(0)} }
-  .p-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; gap:8px; }
-  .p-name { font-weight:600; font-size:15px; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-  .p-actions { display:flex; gap:6px; flex-shrink:0; }
-  .p-meta { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
-  .badge { background:rgba(247,151,30,0.15); color:var(--accent); border-radius:6px; padding:3px 8px; font-size:12px; font-weight:600; }
-  .badge-green { background:rgba(0,230,118,0.15); color:var(--green); }
-  .badge-blue { background:rgba(64,196,255,0.15); color:var(--blue); }
-  .btn-icon { background:rgba(255,255,255,0.07); color:var(--muted); border:none; border-radius:8px; width:32px; height:32px; font-size:15px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .2s; }
-  .btn-icon.del { background:rgba(255,82,82,0.12); color:var(--red); }
+.btn{display:block;width:100%;padding:14px;border:none;border-radius:12px;font-family:'Unbounded',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .18s;letter-spacing:.3px}
+.btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#0f0f1a;box-shadow:0 4px 20px rgba(247,151,30,.35)}
+.btn-primary:active{transform:scale(.97)}
+.btn-ghost{background:transparent;color:var(--accent);border:1px solid var(--border);font-size:13px;padding:10px}
 
-  /* EDIT FORM */
-  .edit-form { margin-top:10px; padding-top:10px; border-top:1px solid rgba(255,255,255,0.07); display:none; }
-  .edit-form.open { display:block; animation:fadeIn .2s ease; }
-  .edit-actions { display:flex; gap:8px; margin-top:10px; }
-  .btn-save { flex:1; padding:9px; border:none; border-radius:10px; background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#0f0f1a; font-family:'Golos Text',sans-serif; font-weight:700; font-size:13px; cursor:pointer; }
-  .btn-cancel { padding:9px 14px; border:1px solid rgba(255,255,255,0.1); border-radius:10px; background:none; color:var(--muted); font-family:'Golos Text',sans-serif; font-size:13px; cursor:pointer; }
+.toggle-row{display:flex;justify-content:space-between;align-items:center}
+.toggle-label{font-size:13px;color:var(--text);font-weight:500;flex:1}
+.toggle-sub{font-size:11px;color:var(--muted);margin-top:2px}
+.toggle{position:relative;width:44px;height:24px;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0}
+.slider{position:absolute;inset:0;background:#2a2a3e;border-radius:24px;cursor:pointer;transition:.3s}
+.slider:before{content:'';position:absolute;width:18px;height:18px;left:3px;top:3px;background:var(--muted);border-radius:50%;transition:.3s}
+input:checked+.slider{background:linear-gradient(135deg,var(--accent),var(--accent2))}
+input:checked+.slider:before{transform:translateX(20px);background:#0f0f1a}
 
-  /* RESULTS */
-  .result-summary { background:linear-gradient(135deg,rgba(247,151,30,.12),rgba(255,210,0,.06)); border:1px solid var(--border); border-radius:var(--radius); padding:16px; margin-bottom:16px; text-align:center; }
-  .result-summary .event-tag { font-size:12px; color:var(--accent); font-weight:600; margin-bottom:6px; font-family:'Unbounded',sans-serif; letter-spacing:.5px; }
-  .result-summary .big-num { font-family:'Unbounded',sans-serif; font-size:32px; font-weight:900; background:linear-gradient(90deg,var(--accent),var(--accent2)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
-  .result-summary .lbl { color:var(--muted); font-size:13px; margin-top:2px; }
-  .round-note { font-size:11px; color:var(--accent2); margin-top:4px; }
+.mode-btns{display:flex;gap:6px}
+.mode-btn{flex:1;padding:9px 6px;border:1px solid rgba(255,255,255,.1);background:var(--card2);color:var(--muted);border-radius:10px;font-family:'Golos Text',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;text-align:center}
+.mode-btn.active{border-color:var(--accent);color:var(--accent);background:rgba(247,151,30,.1)}
 
-  .stats-row { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-bottom:16px; }
-  .stat-box { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:12px 10px; text-align:center; }
-  .stat-box .val { font-family:'Unbounded',sans-serif; font-size:16px; font-weight:700; color:var(--accent2); }
-  .stat-box .lbl { font-size:10px; color:var(--muted); margin-top:3px; }
+.participant{background:var(--card2);border-radius:12px;padding:12px 14px;margin-bottom:8px;border:1px solid rgba(255,255,255,.06);animation:fadeIn .25s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+.p-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;gap:8px}
+.p-name{font-weight:600;font-size:15px;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.p-actions{display:flex;gap:6px;flex-shrink:0}
+.p-meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.badge{background:rgba(247,151,30,.15);color:var(--accent);border-radius:6px;padding:3px 8px;font-size:12px;font-weight:600}
+.badge-green{background:rgba(0,230,118,.15);color:var(--green)}
+.badge-blue{background:rgba(64,196,255,.15);color:var(--blue)}
+.btn-icon{background:rgba(255,255,255,.07);color:var(--muted);border:none;border-radius:8px;width:32px;height:32px;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.btn-icon.del{background:rgba(255,82,82,.12);color:var(--red)}
 
-  .transfer-card { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:14px 16px; margin-bottom:10px; display:flex; align-items:center; gap:12px; animation:fadeIn .3s ease; }
-  .transfer-arrow { font-size:20px; color:var(--accent); flex-shrink:0; }
-  .transfer-info { flex:1; }
-  .transfer-from { font-size:13px; color:var(--muted); }
-  .transfer-to { font-size:15px; font-weight:600; }
-  .transfer-amount { font-family:'Unbounded',sans-serif; font-size:16px; font-weight:700; color:var(--green); flex-shrink:0; }
+.edit-form{margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,.07);display:none}
+.edit-form.open{display:block;animation:fadeIn .2s ease}
+.edit-actions{display:flex;gap:8px;margin-top:10px}
+.btn-save{flex:1;padding:9px;border:none;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#0f0f1a;font-family:'Golos Text',sans-serif;font-weight:700;font-size:13px;cursor:pointer}
+.btn-cancel{padding:9px 14px;border:1px solid rgba(255,255,255,.1);border-radius:10px;background:none;color:var(--muted);font-family:'Golos Text',sans-serif;font-size:13px;cursor:pointer}
 
-  .no-transfers { text-align:center; padding:30px; color:var(--green); font-size:16px; font-weight:600; }
-  .section-label { font-size:12px; color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:.8px; margin:16px 0 8px; }
+.result-summary{background:linear-gradient(135deg,rgba(247,151,30,.12),rgba(255,210,0,.06));border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:16px;text-align:center}
+.result-summary .event-tag{font-size:12px;color:var(--accent);font-weight:600;margin-bottom:6px;font-family:'Unbounded',sans-serif;letter-spacing:.5px}
+.result-summary .big-num{font-family:'Unbounded',sans-serif;font-size:32px;font-weight:900;background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.result-summary .lbl{color:var(--muted);font-size:13px;margin-top:2px}
+.round-note{font-size:11px;color:var(--accent2);margin-top:4px}
 
-  .balance-row { display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.05); }
-  .balance-row:last-child { border-bottom:none; }
-  .balance-name { font-size:14px; font-weight:500; }
-  .balance-paid { font-size:12px; color:var(--muted); }
-  .balance-val { font-family:'Unbounded',sans-serif; font-size:14px; font-weight:700; }
-  .pos { color:var(--green); }
-  .neg { color:var(--red); }
+.stats-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px}
+.stat-box{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 10px;text-align:center}
+.stat-box .val{font-family:'Unbounded',sans-serif;font-size:16px;font-weight:700;color:var(--accent2)}
+.stat-box .lbl{font-size:10px;color:var(--muted);margin-top:3px}
 
-  .empty-state { text-align:center; padding:30px 20px; color:var(--muted); font-size:14px; }
+.transfer-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px 16px;margin-bottom:10px;display:flex;align-items:center;gap:12px;animation:fadeIn .3s ease}
+.transfer-arrow{font-size:20px;color:var(--accent);flex-shrink:0}
+.transfer-info{flex:1}
+.transfer-from{font-size:13px;color:var(--muted)}
+.transfer-to{font-size:15px;font-weight:600}
+.transfer-amount{font-family:'Unbounded',sans-serif;font-size:16px;font-weight:700;color:var(--green);flex-shrink:0}
 
-  /* PWA INSTALL BANNER */
-  #install-banner {
-    display:none; margin-bottom:12px;
-    background:linear-gradient(135deg,rgba(247,151,30,0.15),rgba(255,210,0,0.08));
-    border:1px solid var(--border); border-radius:var(--radius); padding:14px 16px;
-    align-items:center; gap:12px;
-  }
-  #install-banner.show { display:flex; animation:fadeIn .3s ease; }
-  #install-banner .ib-text { flex:1; }
-  #install-banner .ib-title { font-weight:700; font-size:14px; }
-  #install-banner .ib-sub { font-size:12px; color:var(--muted); margin-top:2px; }
-  #install-banner .ib-btn { background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#0f0f1a; border:none; border-radius:10px; padding:9px 16px; font-family:'Unbounded',sans-serif; font-weight:700; font-size:12px; cursor:pointer; white-space:nowrap; }
-  #install-banner .ib-close { background:none; border:none; color:var(--muted); font-size:18px; cursor:pointer; padding:0 4px; }
+.no-transfers{text-align:center;padding:30px;color:var(--green);font-size:16px;font-weight:600}
+.section-label{font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.8px;margin:16px 0 8px}
 
-  /* iOS INSTALL HINT */
-  #ios-hint {
-    display:none; margin-bottom:12px;
-    background:rgba(64,196,255,0.08); border:1px solid rgba(64,196,255,0.2);
-    border-radius:var(--radius); padding:14px 16px; font-size:13px; line-height:1.6;
-    color:var(--text); position:relative;
-  }
-  #ios-hint.show { display:block; animation:fadeIn .3s ease; }
-  #ios-hint .ih-title { font-weight:700; margin-bottom:6px; color:var(--blue); }
-  #ios-hint .ih-close { position:absolute; top:10px; right:12px; background:none; border:none; color:var(--muted); font-size:18px; cursor:pointer; }
+.balance-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+.balance-row:last-child{border-bottom:none}
+.balance-name{font-size:14px;font-weight:500}
+.balance-paid{font-size:12px;color:var(--muted)}
+.balance-val{font-family:'Unbounded',sans-serif;font-size:14px;font-weight:700}
+.pos{color:var(--green)}
+.neg{color:var(--red)}
 
-  /* TOAST */
-  #toast {
-    position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%) translateY(20px);
-    background: #1a1a2e; border: 1px solid rgba(247,151,30,0.4);
-    color: var(--text); padding: 12px 20px; border-radius: 12px;
-    font-size: 14px; font-weight: 600; z-index: 999;
-    opacity: 0; transition: all 0.3s; pointer-events: none;
-    white-space: nowrap; box-shadow: 0 8px 24px rgba(0,0,0,0.4);
-  }
-  #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-  #toast.error { border-color: rgba(255,82,82,0.5); color: var(--red); }
-  #toast.success { border-color: rgba(0,230,118,0.5); color: var(--green); }
+.empty-state{text-align:center;padding:30px 20px;color:var(--muted);font-size:14px}
+
+/* TOAST */
+#toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px);background:#1a1a2e;border:1px solid rgba(247,151,30,.4);color:var(--text);padding:12px 20px;border-radius:12px;font-size:14px;font-weight:600;z-index:999;opacity:0;transition:all .3s;pointer-events:none;white-space:nowrap;box-shadow:0 8px 24px rgba(0,0,0,.4)}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#toast.error{border-color:rgba(255,82,82,.5);color:var(--red)}
+#toast.success{border-color:rgba(0,230,118,.5);color:var(--green)}
+
+/* FAB */
+.fab{position:fixed;bottom:24px;right:20px;width:56px;height:56px;border-radius:28px;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;font-size:28px;color:#0f0f1a;cursor:pointer;box-shadow:0 6px 24px rgba(247,151,30,.5);display:flex;align-items:center;justify-content:center;z-index:100;transition:transform .2s}
+.fab:active{transform:scale(.93)}
 </style>
 </head>
 <body>
 
-<header>
-  <div class="logo">⚖️</div>
-  <h1>GroupBalance</h1>
-  <p>Розподіл витрат у компанії</p>
-</header>
-
-<div class="container">
-
-  <!-- PWA INSTALL BANNER (Android/Desktop) -->
-  <div id="install-banner">
-    <div class="ib-text">
-      <div class="ib-title">📲 Встановити як застосунок</div>
-      <div class="ib-sub">Працює офлайн, іконка на екрані</div>
-    </div>
-    <button class="ib-btn" onclick="installPWA()">Встановити</button>
-    <button class="ib-close" onclick="hideBanner()">×</button>
+<!-- SCREEN 1: EVENTS LIST -->
+<div class="screen active" id="screen-list">
+  <header>
+    <div class="logo">⚖️</div>
+    <h1>GroupBalance</h1>
+    <p>Розподіл витрат у компанії</p>
+  </header>
+  <div class="container">
+    <div id="events-list"></div>
   </div>
-
-  <!-- iOS INSTALL HINT -->
-  <div id="ios-hint">
-    <button class="ih-close" onclick="document.getElementById('ios-hint').classList.remove('show')">×</button>
-    <div class="ih-title">📲 Як встановити на iPhone/iPad</div>
-    Натисни кнопку <strong>«Поділитись»</strong> (□↑) внизу Safari →<br>
-    потім <strong>«На екран Домівки»</strong> → <strong>«Додати»</strong>
-  </div>
-
-  <div class="tabs">
-    <button class="tab active" onclick="showTab('input')">👥 Учасники</button>
-    <button class="tab" onclick="showTab('result')">💸 Розрахунок</button>
-  </div>
-
-  <!-- INPUT TAB -->
-  <div class="section active" id="tab-input">
-
-    <div class="card">
-      <div class="card-title">🎉 Захід</div>
-      <div class="row2" style="margin-bottom:10px">
-        <div>
-          <label>Тип заходу</label>
-          <select id="inp-event-type" onchange="updateHeader()">
-            <option value="🔥 Пікнік">🔥 Пікнік</option>
-            <option value="🛁 Баня">🛁 Баня</option>
-            <option value="🎂 День народження">🎂 День народження</option>
-            <option value="🏖️ Відпочинок">🏖️ Відпочинок</option>
-            <option value="🍕 Корпоратив">🍕 Корпоратив</option>
-            <option value="⚽ Спорт">⚽ Спорт</option>
-            <option value="🎭 Інше">🎭 Інше</option>
-          </select>
-        </div>
-        <div>
-          <label>Власна назва</label>
-          <input type="text" id="inp-event-name" placeholder="Дача Петренків" maxlength="40" oninput="updateHeader()">
-        </div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-title">⚙️ Налаштування</div>
-      <div style="margin-bottom:14px">
-        <label style="margin-bottom:8px">Розрахунок ведеться</label>
-        <div class="mode-btns">
-          <button class="mode-btn active" id="mode-person" onclick="setMode('person')">👤 На особу</button>
-          <button class="mode-btn" id="mode-family" onclick="setMode('family')">👨‍👩‍👧 На сім'ю</button>
-        </div>
-        <div style="font-size:11px;color:var(--muted);margin-top:6px" id="mode-hint">Кількість осіб впливає на частку витрат</div>
-      </div>
-      <div class="toggle-row">
-        <div>
-          <div class="toggle-label">Округлення до цілих ₴</div>
-          <div class="toggle-sub">Якщо сума не ділиться рівно</div>
-        </div>
-        <label class="toggle">
-          <input type="checkbox" id="chk-round" onchange="updateRoundHint()">
-          <span class="slider"></span>
-        </label>
-      </div>
-      <div id="round-hint" style="font-size:11px;color:var(--muted);margin-top:6px;display:none">
-        Різниця від округлення розподіляється між учасниками
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-title">➕ Додати учасника</div>
-      <div style="margin-bottom:10px">
-        <label>Прізвище або ім'я</label>
-        <input type="text" id="inp-name" placeholder="Петренко" maxlength="30">
-      </div>
-      <div class="row2" style="margin-bottom:10px">
-        <div id="count-wrap">
-          <label>Осіб у групі</label>
-          <input type="number" id="inp-count" placeholder="2" min="1" max="50">
-        </div>
-        <div>
-          <label>Витратив (₴)</label>
-          <input type="number" id="inp-spent" placeholder="0" min="0">
-        </div>
-      </div>
-      <button class="btn btn-primary" onclick="addParticipant()">Додати учасника</button>
-    </div>
-
-    <div id="participants-list"></div>
-
-    <div id="calc-btn-wrap" style="display:none;margin-top:8px">
-      <button class="btn btn-primary" onclick="calculate()">🧮 Розрахувати</button>
-    </div>
-  </div>
-
-  <!-- RESULT TAB -->
-  <div class="section" id="tab-result">
-    <div id="result-content">
-      <div class="empty-state">
-        <div style="font-size:40px;margin-bottom:12px">🧮</div>
-        Спочатку додайте учасників<br>та натисніть «Розрахувати»
-      </div>
-    </div>
-  </div>
-
+  <button class="fab" onclick="newEvent()" title="Новий захід">＋</button>
 </div>
 
+<!-- SCREEN 2: EVENT EDITOR -->
+<div class="screen" id="screen-event">
+  <div class="top-bar">
+    <button class="top-bar-back" onclick="goHome()">←</button>
+    <div class="top-bar-logo">⚖️</div>
+    <div class="top-bar-title" id="top-bar-event-name">Новий захід</div>
+  </div>
+  <div class="container">
+    <div class="tabs">
+      <button class="tab active" onclick="showTab('input')">👥 Учасники</button>
+      <button class="tab" onclick="showTab('result')">💸 Розрахунок</button>
+    </div>
+
+    <div class="section active" id="tab-input">
+      <div class="card">
+        <div class="card-title">🎉 Захід</div>
+        <div class="row2" style="margin-bottom:10px">
+          <div>
+            <label>Тип заходу</label>
+            <select id="inp-event-type" onchange="saveEventMeta()">
+              <option value="🔥 Пікнік">🔥 Пікнік</option>
+              <option value="🛁 Баня">🛁 Баня</option>
+              <option value="🎂 День народження">🎂 День народження</option>
+              <option value="🏖️ Відпочинок">🏖️ Відпочинок</option>
+              <option value="🍕 Корпоратив">🍕 Корпоратив</option>
+              <option value="⚽ Спорт">⚽ Спорт</option>
+              <option value="🎭 Інше">🎭 Інше</option>
+            </select>
+          </div>
+          <div>
+            <label>Власна назва</label>
+            <input type="text" id="inp-event-name" placeholder="Дача Петренків" maxlength="40" oninput="saveEventMeta()">
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">⚙️ Налаштування</div>
+        <div style="margin-bottom:14px">
+          <label style="margin-bottom:8px">Розрахунок ведеться</label>
+          <div class="mode-btns">
+            <button class="mode-btn active" id="mode-person" onclick="setMode('person')">👤 На особу</button>
+            <button class="mode-btn" id="mode-family" onclick="setMode('family')">👨‍👩‍👧 На сім'ю</button>
+          </div>
+          <div style="font-size:11px;color:var(--muted);margin-top:6px" id="mode-hint">Кількість осіб впливає на частку витрат</div>
+        </div>
+        <div class="toggle-row">
+          <div>
+            <div class="toggle-label">Округлення до цілих ₴</div>
+            <div class="toggle-sub">Якщо сума не ділиться рівно</div>
+          </div>
+          <label class="toggle">
+            <input type="checkbox" id="chk-round" onchange="saveEventMeta()">
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">➕ Додати учасника</div>
+        <div style="margin-bottom:10px">
+          <label>Прізвище або ім'я</label>
+          <input type="text" id="inp-name" placeholder="Петренко" maxlength="30">
+        </div>
+        <div class="row2" style="margin-bottom:10px">
+          <div id="count-wrap">
+            <label>Осіб у групі</label>
+            <input type="number" id="inp-count" placeholder="2" min="1" max="50">
+          </div>
+          <div>
+            <label>Витратив (₴)</label>
+            <input type="number" id="inp-spent" placeholder="0" min="0">
+          </div>
+        </div>
+        <button class="btn btn-primary" onclick="addParticipant()">Додати учасника</button>
+      </div>
+
+      <div id="participants-list"></div>
+      <div id="calc-btn-wrap" style="display:none;margin-top:8px">
+        <button class="btn btn-primary" onclick="calculate()">🧮 Розрахувати</button>
+      </div>
+    </div>
+
+    <div class="section" id="tab-result">
+      <div id="result-content">
+        <div class="empty-state">
+          <div style="font-size:40px;margin-bottom:12px">🧮</div>
+          Додайте учасників та натисніть «Розрахувати»
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
 <script>
-
-function toast(msg, type='error') {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = 'show ' + type;
-  clearTimeout(t._timer);
-  t._timer = setTimeout(() => t.className = '', 2500);
+// ---- STORAGE ----
+function loadEvents() {
+  try { return JSON.parse(localStorage.getItem('gb_events') || '[]'); } catch { return []; }
+}
+function saveEvents(events) {
+  localStorage.setItem('gb_events', JSON.stringify(events));
 }
 
-// ---- PWA SETUP ----
-let deferredPrompt = null;
-
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js').catch(()=>{});
-}
-
-window.addEventListener('beforeinstallprompt', e => {
-  e.preventDefault();
-  deferredPrompt = e;
-  document.getElementById('install-banner').classList.add('show');
-});
-window.addEventListener('appinstalled', () => { hideBanner(); deferredPrompt = null; });
-
-function installPWA() {
-  if (!deferredPrompt) return;
-  deferredPrompt.prompt();
-  deferredPrompt.userChoice.then(() => { deferredPrompt = null; hideBanner(); });
-}
-function hideBanner() { document.getElementById('install-banner').classList.remove('show'); }
-
-const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-if (isIOS && !window.navigator.standalone) {
-  document.getElementById('ios-hint').classList.add('show');
-}
-
-// ---- APP LOGIC ----
+// ---- STATE ----
+let events = loadEvents();
+let currentEventId = null;
 let participants = [];
 let calcMode = 'person';
 
@@ -376,31 +286,142 @@ function getEventEmoji() {
   if (name) return '🎉';
   return eventEmojis[document.getElementById('inp-event-type').value] || '🎉';
 }
-function updateHeader() {}
-function updateRoundHint() {
-  document.getElementById('round-hint').style.display =
-    document.getElementById('chk-round').checked ? 'block' : 'none';
+
+// ---- SCREENS ----
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
 }
-function setMode(m) {
+
+function goHome() {
+  persistCurrentEvent();
+  showScreen('screen-list');
+  renderEventsList();
+}
+
+function showTab(t) {
+  document.querySelectorAll('.tab').forEach((b,i) => b.classList.toggle('active', (t==='input'&&i===0)||(t==='result'&&i===1)));
+  document.getElementById('tab-input').classList.toggle('active', t==='input');
+  document.getElementById('tab-result').classList.toggle('active', t==='result');
+}
+
+// ---- EVENTS LIST ----
+function renderEventsList() {
+  const el = document.getElementById('events-list');
+  if (!events.length) {
+    el.innerHTML = `<div class="empty-state"><div style="font-size:48px;margin-bottom:16px">🎉</div><div style="font-size:16px;font-weight:600;color:var(--text);margin-bottom:8px">Немає заходів</div>Натисніть ＋ щоб створити перший захід</div>`;
+    return;
+  }
+  el.innerHTML = `<div class="section-label">Мої заходи (${events.length})</div>` +
+    [...events].reverse().map(ev => {
+      const total = (ev.participants||[]).reduce((s,p)=>s+p.spent,0);
+      const pCount = (ev.participants||[]).length;
+      const date = new Date(ev.createdAt).toLocaleDateString('uk-UA',{day:'numeric',month:'short',year:'numeric'});
+      return `
+        <div class="event-card" onclick="openEvent('${ev.id}')">
+          <div class="event-card-top">
+            <div>
+              <div class="event-card-name">${getEmojiForEvent(ev)} ${escHtml(ev.label||ev.type)}</div>
+              <div class="event-card-date">${date}</div>
+            </div>
+            <button class="event-card-del" onclick="event.stopPropagation();deleteEvent('${ev.id}')">✕</button>
+          </div>
+          <div class="event-card-meta">
+            <span class="badge">👥 ${pCount} учасн.</span>
+            ${total>0?`<span class="badge badge-green">💰 ${fmtMoney(total)} ₴</span>`:''}
+          </div>
+        </div>`;
+    }).join('');
+}
+
+function getEmojiForEvent(ev) {
+  if (ev.customName) return '🎉';
+  return eventEmojis[ev.type] || '🎉';
+}
+
+function newEvent() {
+  const id = 'ev_' + Date.now();
+  const ev = {
+    id, type: '🔥 Пікнік', customName: '', label: '🔥 Пікнік',
+    calcMode: 'person', doRound: false,
+    participants: [], createdAt: Date.now()
+  };
+  events.push(ev);
+  saveEvents(events);
+  openEvent(id);
+}
+
+function openEvent(id) {
+  const ev = events.find(e => e.id === id);
+  if (!ev) return;
+  currentEventId = id;
+  participants = JSON.parse(JSON.stringify(ev.participants || []));
+  calcMode = ev.calcMode || 'person';
+
+  document.getElementById('inp-event-type').value = ev.type || '🔥 Пікнік';
+  document.getElementById('inp-event-name').value = ev.customName || '';
+  document.getElementById('chk-round').checked = ev.doRound || false;
+  document.getElementById('top-bar-event-name').textContent = ev.label || ev.type;
+
+  setMode(calcMode, false);
+  renderList();
+  showTab('input');
+  showScreen('screen-event');
+
+  // Reset result
+  document.getElementById('result-content').innerHTML = `<div class="empty-state"><div style="font-size:40px;margin-bottom:12px">🧮</div>Додайте учасників та натисніть «Розрахувати»</div>`;
+}
+
+function deleteEvent(id) {
+  if (!confirm('Видалити захід?')) return;
+  events = events.filter(e => e.id !== id);
+  saveEvents(events);
+  renderEventsList();
+}
+
+function persistCurrentEvent() {
+  if (!currentEventId) return;
+  const ev = events.find(e => e.id === currentEventId);
+  if (!ev) return;
+  ev.type = document.getElementById('inp-event-type').value;
+  ev.customName = document.getElementById('inp-event-name').value.trim();
+  ev.label = getEventLabel();
+  ev.calcMode = calcMode;
+  ev.doRound = document.getElementById('chk-round').checked;
+  ev.participants = JSON.parse(JSON.stringify(participants));
+  saveEvents(events);
+}
+
+function saveEventMeta() {
+  if (!currentEventId) return;
+  const ev = events.find(e => e.id === currentEventId);
+  if (!ev) return;
+  ev.type = document.getElementById('inp-event-type').value;
+  ev.customName = document.getElementById('inp-event-name').value.trim();
+  ev.label = getEventLabel();
+  ev.doRound = document.getElementById('chk-round').checked;
+  document.getElementById('top-bar-event-name').textContent = ev.label;
+  saveEvents(events);
+}
+
+// ---- MODE ----
+function setMode(m, save=true) {
   calcMode = m;
   document.getElementById('mode-person').classList.toggle('active', m==='person');
   document.getElementById('mode-family').classList.toggle('active', m==='family');
   const hint = document.getElementById('mode-hint');
   if (m==='family') {
     document.getElementById('count-wrap').style.display='none';
-    hint.textContent="Кожна сім'я платить рівну частку незалежно від кількості";
+    hint.textContent="Кожна сім'я платить рівну частку";
   } else {
     document.getElementById('count-wrap').style.display='block';
     hint.textContent='Кількість осіб впливає на частку витрат';
   }
+  if (save) saveEventMeta();
   renderList();
 }
-function showTab(t) {
-  document.querySelectorAll('.tab').forEach((b,i)=>b.classList.toggle('active',(t==='input'&&i===0)||(t==='result'&&i===1)));
-  document.getElementById('tab-input').classList.toggle('active',t==='input');
-  document.getElementById('tab-result').classList.toggle('active',t==='result');
-}
 
+// ---- PARTICIPANTS ----
 function addParticipant() {
   const name = document.getElementById('inp-name').value.trim();
   const count = parseInt(document.getElementById('inp-count').value)||1;
@@ -410,16 +431,21 @@ function addParticipant() {
   document.getElementById('inp-name').value='';
   document.getElementById('inp-count').value='';
   document.getElementById('inp-spent').value='';
+  persistCurrentEvent();
   renderList();
   document.getElementById('inp-name').focus();
 }
+
 function removeParticipant(id) {
   participants = participants.filter(p=>p.id!==id);
+  persistCurrentEvent();
   renderList();
 }
+
 function toggleEdit(id) {
   document.getElementById('ef-'+id).classList.toggle('open');
 }
+
 function saveEdit(id) {
   const p = participants.find(p=>p.id===id);
   if (!p) return;
@@ -428,8 +454,10 @@ function saveEdit(id) {
   const spent = parseFloat(document.getElementById('es-'+id).value)||0;
   if (!name) { toast("⚠️ Введіть ім'я"); return; }
   p.name=name; p.count=count; p.spent=spent;
+  persistCurrentEvent();
   renderList();
 }
+
 function renderList() {
   const el = document.getElementById('participants-list');
   const wrap = document.getElementById('calc-btn-wrap');
@@ -461,53 +489,40 @@ function renderList() {
             <button class="btn-cancel" onclick="toggleEdit(${p.id})">Скасувати</button>
           </div>
         </div>
-      </div>
-    `).join('');
+      </div>`).join('');
 }
 
+// ---- CALCULATE ----
 function calcCore() {
   const doRound = document.getElementById('chk-round').checked;
   const byFamily = calcMode==='family';
   const units = byFamily ? participants.length : participants.reduce((s,p)=>s+p.count,0);
   const totalSpent = participants.reduce((s,p)=>s+p.spent,0);
   const exactPerUnit = totalSpent / units;
-
-  // Розраховуємо частку кожного точно (без округлення цілого perUnit)
-  // щоб сума часток завжди = totalSpent
-  let balances;
-  let wasRounded = false;
-  let perUnitDisplay = exactPerUnit;
+  let balances, wasRounded=false, perUnitDisplay=exactPerUnit;
 
   if (doRound) {
-    // Округляємо частку кожного учасника окремо, щоб сума не розходилась
-    const rawOwed = participants.map(p => {
-      const u = byFamily ? 1 : p.count;
-      return { name: p.name, paid: p.spent, units: u, rawOwed: exactPerUnit * u };
-    });
-    // Floor для кожного, потім розподіляємо залишок копійки по одному
-    let floored = rawOwed.map(p => ({ ...p, owed: Math.floor(p.rawOwed) }));
+    const rawOwed = participants.map(p=>({...p, units:byFamily?1:p.count, rawOwed:exactPerUnit*(byFamily?1:p.count)}));
+    let floored = rawOwed.map(p=>({...p, owed:Math.floor(p.rawOwed)}));
     let remainder = Math.round(totalSpent - floored.reduce((s,p)=>s+p.owed,0));
-    // Сортуємо за дробовою частиною (хто найбільше "недоотримав") і додаємо по 1
-    const sorted = [...floored].map((p,i)=>({i, frac: p.rawOwed - Math.floor(p.rawOwed)})).sort((a,b)=>b.frac-a.frac);
-    for (let k=0; k<remainder && k<sorted.length; k++) floored[sorted[k].i].owed += 1;
-    balances = floored.map(p => ({ name:p.name, paid:p.paid, owed:p.owed, balance: p.paid - p.owed }));
-    wasRounded = true;
-    perUnitDisplay = Math.round(exactPerUnit);
+    const sorted = [...floored].map((p,i)=>({i, frac:p.rawOwed-Math.floor(p.rawOwed)})).sort((a,b)=>b.frac-a.frac);
+    for (let k=0; k<remainder&&k<sorted.length; k++) floored[sorted[k].i].owed+=1;
+    balances = floored.map(p=>({name:p.name, paid:p.spent, owed:p.owed, balance:p.spent-p.owed}));
+    wasRounded=true; perUnitDisplay=Math.round(exactPerUnit);
   } else {
-    balances = participants.map(p => {
-      const u = byFamily ? 1 : p.count;
-      const owed = Math.round(exactPerUnit * u * 100) / 100;
-      return { name:p.name, paid:p.spent, owed, balance: Math.round((p.spent - owed)*100)/100 };
+    balances = participants.map(p=>{
+      const u=byFamily?1:p.count;
+      const owed=Math.round(exactPerUnit*u*100)/100;
+      return {name:p.name, paid:p.spent, owed, balance:Math.round((p.spent-owed)*100)/100};
     });
   }
-
-  return { balances, wasRounded, perUnitDisplay, exactPerUnit, units, totalSpent, byFamily };
+  return {balances, wasRounded, perUnitDisplay, units, totalSpent, byFamily};
 }
 
 function calculate() {
   if (participants.length < 2) { toast('⚠️ Додайте мінімум 2 учасники'); return; }
-  const { balances, wasRounded, perUnitDisplay, units, totalSpent, byFamily } = calcCore();
-  const transfers = simplifyDebts(balances.map(b=>({name:b.name,bal:b.balance})));
+  const {balances, wasRounded, perUnitDisplay, units, totalSpent, byFamily} = calcCore();
+  const transfers = simplifyDebts(balances.map(b=>({name:b.name, bal:b.balance})));
   const eventLabel = getEventLabel();
   const emoji = getEventEmoji();
   const unitLabel = byFamily?"сім'ю":"особу";
@@ -517,24 +532,19 @@ function calculate() {
       <div class="event-tag">${emoji} ${escHtml(eventLabel)}</div>
       <div class="big-num">${fmtMoney(totalSpent)} ₴</div>
       <div class="lbl">Загальна сума витрат</div>
-      ${wasRounded?`<div class="round-note">≈ ${fmtMoney(perUnitDisplay)} ₴ на ${unitLabel} (округлено)</div>`:`<div class="round-note" style="color:var(--muted)">${fmtMoney(perUnitDisplay % 1 === 0 ? perUnitDisplay : (Math.round(perUnitDisplay*100)/100))} ₴ на ${unitLabel}</div>`}
+      <div class="round-note" style="color:${wasRounded?'var(--accent2)':'var(--muted)'}">${fmtMoney(perUnitDisplay)} ₴ на ${unitLabel}${wasRounded?' (округлено)':''}</div>
     </div>
     <div class="stats-row">
       <div class="stat-box"><div class="val">${units}</div><div class="lbl">${byFamily?'сімей':'осіб'}</div></div>
-      <div class="stat-box"><div class="val">${fmtMoney(perUnitDisplay)}</div><div class="lbl">₴ на ${unitLabel}</div></div>
+      <div class="stat-box"><div class="val">${fmtMoney(perUnitDisplay)}</div><div class="lbl">₴/${unitLabel.split(' ')[0]}</div></div>
       <div class="stat-box"><div class="val">${transfers.length}</div><div class="lbl">переказів</div></div>
     </div>
     <div class="card">
       <div class="card-title">📊 Баланс учасників</div>
       ${balances.map(b=>`
         <div class="balance-row">
-          <div>
-            <div class="balance-name">${escHtml(b.name)}</div>
-            <div class="balance-paid">Сплатив: ${fmtMoney(b.paid)} ₴ · Частка: ${fmtMoney(b.owed)} ₴</div>
-          </div>
-          <div style="text-align:right;flex-shrink:0">
-            <div class="balance-val ${b.balance>0.009?'pos':b.balance<-0.009?'neg':''}">${b.balance>0.009?'отримає +':'доплатить '}${fmtMoney(Math.abs(b.balance))} ₴</div>
-          </div>
+          <div><div class="balance-name">${escHtml(b.name)}</div><div class="balance-paid">Сплатив: ${fmtMoney(b.paid)} ₴ · Частка: ${fmtMoney(b.owed)} ₴</div></div>
+          <div style="text-align:right;flex-shrink:0"><div class="balance-val ${b.balance>0.009?'pos':b.balance<-0.009?'neg':''}">${b.balance>0.009?'отримає +':'доплатить '}${fmtMoney(Math.abs(b.balance))} ₴</div></div>
         </div>`).join('')}
     </div>
     <div class="section-label">💸 Хто кому переводить</div>
@@ -543,25 +553,18 @@ function calculate() {
       :transfers.map(t=>`
         <div class="transfer-card">
           <div class="transfer-arrow">→</div>
-          <div class="transfer-info">
-            <div class="transfer-from">${escHtml(t.from)} переводить</div>
-            <div class="transfer-to">${escHtml(t.to)}</div>
-          </div>
+          <div class="transfer-info"><div class="transfer-from">${escHtml(t.from)} переводить</div><div class="transfer-to">${escHtml(t.to)}</div></div>
           <div class="transfer-amount">${fmtMoney(t.amount)} ₴</div>
         </div>`).join('')}
     <div style="margin-top:20px">
       <button class="btn btn-ghost" onclick="shareResult()">📤 Поділитись результатом</button>
-    </div>
-  `;
+    </div>`;
   showTab('result');
 }
 
 function simplifyDebts(people) {
-  let pos=[], neg=[];
-  people.forEach(p=>{
-    if(p.bal>0.01) pos.push({name:p.name,amt:p.bal});
-    else if(p.bal<-0.01) neg.push({name:p.name,amt:-p.bal});
-  });
+  let pos=[],neg=[];
+  people.forEach(p=>{if(p.bal>0.01)pos.push({name:p.name,amt:p.bal});else if(p.bal<-0.01)neg.push({name:p.name,amt:-p.bal});});
   pos.sort((a,b)=>b.amt-a.amt); neg.sort((a,b)=>b.amt-a.amt);
   const transfers=[]; let i=0,j=0;
   while(i<pos.length&&j<neg.length){
@@ -574,32 +577,40 @@ function simplifyDebts(people) {
 }
 
 function shareResult() {
-  const { balances, perUnitDisplay, totalSpent, byFamily } = calcCore();
+  const {balances, perUnitDisplay, totalSpent, byFamily} = calcCore();
   const transfers = simplifyDebts(balances.map(b=>({name:b.name,bal:b.balance})));
   const unitLabel = byFamily?"сім'ю":"особу";
-  let text = `⚖️ GroupBalance — ${getEventLabel()}\n`;
-  text += `💰 Загалом: ${fmtMoney(totalSpent)} ₴ (${fmtMoney(perUnitDisplay)} ₴/${unitLabel})\n\n`;
-  text += `📊 Хто скільки доплачує / отримує:\n`;
-  balances.forEach(b => {
-    if (b.balance > 0.009) text += `• ${b.name}: отримає +${fmtMoney(b.balance)} ₴\n`;
-    else if (b.balance < -0.009) text += `• ${b.name}: доплатить ${fmtMoney(Math.abs(b.balance))} ₴\n`;
-    else text += `• ${b.name}: ✅ розрахований\n`;
+  let text=`⚖️ GroupBalance — ${getEventLabel()}\n`;
+  text+=`💰 Загалом: ${fmtMoney(totalSpent)} ₴ (${fmtMoney(perUnitDisplay)} ₴/${unitLabel})\n\n`;
+  text+=`📊 Баланс:\n`;
+  balances.forEach(b=>{
+    if(b.balance>0.009) text+=`• ${b.name}: отримає +${fmtMoney(b.balance)} ₴\n`;
+    else if(b.balance<-0.009) text+=`• ${b.name}: доплатить ${fmtMoney(Math.abs(b.balance))} ₴\n`;
+    else text+=`• ${b.name}: ✅ розрахований\n`;
   });
-  text += `\n💸 Переводимо:\n`;
-  if (!transfers.length) { text += `✅ Всі в розрахунку!`; }
-  else { transfers.forEach(t => { text += `• ${t.from} → ${t.to}: ${fmtMoney(t.amount)} ₴\n`; }); }
-  if (navigator.share) { navigator.share({title:'GroupBalance — '+getEventLabel(), text}); }
-  else { navigator.clipboard.writeText(text).then(()=>toast('✅ Скопійовано!','success')); }
+  text+=`\n💸 Переводимо:\n`;
+  if(!transfers.length){text+=`✅ Всі в розрахунку!`;}
+  else{transfers.forEach(t=>{text+=`• ${t.from} → ${t.to}: ${fmtMoney(t.amount)} ₴\n`;});}
+  if(navigator.share){navigator.share({title:'GroupBalance — '+getEventLabel(),text});}
+  else{navigator.clipboard.writeText(text).then(()=>toast('✅ Скопійовано!','success'));}
 }
 
+// ---- UTILS ----
+function toast(msg, type='error') {
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.className='show '+(type||'error');
+  clearTimeout(t._timer);
+  t._timer=setTimeout(()=>t.className='',2500);
+}
 function fmtMoney(n){const r=Math.round(n*100)/100;return r%1===0?Math.round(r).toString():r.toFixed(2);}
 function escHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function escAttr(s){return escHtml(s);}
 
+// ---- INIT ----
 document.getElementById('inp-spent').addEventListener('keydown',e=>{if(e.key==='Enter')addParticipant();});
 document.getElementById('inp-name').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('inp-count').focus();});
-</script>
 
-<div id="toast"></div>
+renderEventsList();
+</script>
 </body>
 </html>
